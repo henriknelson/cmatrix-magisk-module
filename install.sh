@@ -122,40 +122,35 @@ REPLACE="
 # Set what you want to display when installing your module
 
 print_modname() {
-ui_print "******************************"
-ui_print "     cmatrix for Android      "
-ui_print "     nelshh@xda-developers    "
-ui_print "******************************"
+  ui_print "*********************************************"
+  ui_print "     CMatrix for Android                     "
+  ui_print "         - v 2.0                             "
+  ui_print "         - built by nelshh @ xda-developers  "
+  ui_print "*********************************************"
 }
 
 # Copy/extract your module files into $MODPATH in on_install.
-
 on_install() {
-  # The following is the default implementation: extract $ZIPFILE/system to $MODPATH
-  # Extend/change the logic to whatever you want
-  ui_print "[1/3] Extracting files..";
+  ui_print "[1/5] Extracting files..";
   unzip -o "$ZIPFILE" '*' -d $MODPATH >&2;
-  ui_print "[2/3] Setting permissions..";
+  ui_print "[2/5] Setting permissions..";
 }
-
-# Only some special files require specific permissions
-# This function will be called after on_install is done
-# The default permissions should be good enough for most cases
 
 set_permissions() {
   # The following is the default rule, DO NOT remove
   set_perm_recursive $MODPATH 0 0 0755 0644;
 
-  chown 0:0 $MODPATH/system/bin/cmatrix $MODPATH/system/bin/cmatrix.bin;
-  chmod 755 $MODPATH/system/bin/cmatrix $MODPATH/system/bin/cmatrix.bin;
+  ui_print "[3/5] Installing to /system/bin..";
+  chown -R 0:0 $MODPATH/system/bin;
+  chmod -R 755 $MODPATH/system/bin;
+  find $MODPATH/system/bin -type f -exec chmod 755 {} +;
+  find $MODPATH/system/bin -type l -exec chmod 755 {} +;
 
+  ui_print "[4/5] Installing to /system/usr/share/man..";
   chown -R 0:0 $MODPATH/system/usr/share/man;
+  chmod -R 755 $MODPATH/system/usr/share/man;
   find $MODPATH/system/usr/share/man -type d -exec chmod 755 {} +\;
   find $MODPATH/system/usr/share/man -type f -exec chmod 644 {} +\;
 
-  ui_print "[3/3] Installation finished";
+  ui_print "[5/5] Installation finished";
 }
-
-# You can add more functions to assist your custom script code
-
-
