@@ -31,7 +31,7 @@ PROPFILE=false
 POSTFSDATA=false
 
 # Set to true if you need late_start service script
-LATESTARTSERVICE=true
+LATESTARTSERVICE=false
 
 ##########################################################################################
 # Replace list
@@ -143,14 +143,19 @@ set_permissions() {
   ui_print "[3/5] Installing to /system/bin..";
   chown -R 0:0 $MODPATH/system/bin;
   chmod -R 755 $MODPATH/system/bin;
-  find $MODPATH/system/bin -type f -exec chmod 755 {} +;
-  find $MODPATH/system/bin -type l -exec chmod 755 {} +;
+  find $MODPATH/system/bin -type f -exec chmod 755 {} \+;
+  find $MODPATH/system/bin -type l -exec chmod 755 {} \+;
 
-  ui_print "[4/5] Installing to /system/usr/share/man..";
-  chown -R 0:0 $MODPATH/system/usr/share/man;
-  chmod -R 755 $MODPATH/system/usr/share/man;
-  find $MODPATH/system/usr/share/man -type d -exec chmod 755 {} +\;
-  find $MODPATH/system/usr/share/man -type f -exec chmod 644 {} +\;
+  ui_print "[4/5] Installing to /data/man..";
+  mkdir -p /data/man;
+  cp -r $MODPATH/custom/man/* /data/man/;
+  chmod -R 664 /data/man;
+  chown -R 0:0 /data/man;
+  find /data/man -type d -exec chmod 755 {} \+;
+  find /data/man -type f -exec chmod 664 {} \+;
+  if [[ -s "/system/bin/mandoc" ]]; then
+     makewhatis /data/man;
+  fi
 
   ui_print "[5/5] Installation finished";
 }
